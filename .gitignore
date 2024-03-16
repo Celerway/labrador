@@ -1,0 +1,13 @@
+# IDEs
+/.idea
+/.vscode
+
+# Build files
+/build
+/bin
+
+# log files
+*.log
+
+# local setup
+/.env
