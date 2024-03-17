@@ -35,7 +35,8 @@ func (s *State) Run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("mqtt server.AddHook: %w", err)
 	}
-	err = s.server.AddHook(new(MonitorHook), &MonitorHookOptions{
+	monitor := new(MonitorHook)
+	err = s.server.AddHook(monitor, &MonitorHookOptions{
 		Server: s.server,
 	})
 	// Create a TCP listener on a standard port.
