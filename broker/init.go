@@ -3,6 +3,7 @@ package broker
 import (
 	"context"
 	"fmt"
+	"github.com/Celerway/labrador/gohue"
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/hooks/auth"
 	"github.com/mochi-mqtt/server/v2/listeners"
@@ -12,10 +13,16 @@ import (
 )
 
 type State struct {
-	mu           sync.Mutex
-	logger       *slog.Logger
-	server       *mqtt.Server
-	inlineClient *mqtt.Client
+	mu         sync.Mutex
+	logger     *slog.Logger
+	server     *mqtt.Server
+	bridgeConn *gohue.Client
+}
+
+type PowerDevice struct {
+	DeviceID string
+	State    bool // true = on, false = off
+	Internal bool
 }
 
 const (
@@ -63,6 +70,11 @@ func (s *State) Run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("mqtt server.Subscribe(lab/storage/#): %w", err)
 	}
+	// set up the hue client
+	s.bridgeConn, err = newHueClient("http://1.2.3.4:80/")
+	if err != nil {
+		return fmt.Errorf("newHueClient: %w", err)
+	}
 
 	// Run server until context is cancelled or an error occurs.
 	select {
@@ -71,11 +83,6 @@ func (s *State) Run(ctx context.Context) error {
 	case err := <-failCh:
 		return fmt.Errorf("mqtt server.Serve: %w", err)
 	}
-}
-
-func (s *State) onPower(cl *mqtt.Client, sub packets.Subscription, pk packets.Packet) {
-	// payload in pk.Payload
-	fmt.Println("onPower")
 }
 
 func (s *State) onStorage(cl *mqtt.Client, sub packets.Subscription, pk packets.Packet) {
