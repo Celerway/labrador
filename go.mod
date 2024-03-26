@@ -1,4 +1,4 @@
-module github.com/Celerway/labrador
+module github.com/celerway/labrador
 
 go 1.22.1
 
