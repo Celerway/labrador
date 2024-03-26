@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/Celerway/labrador/broker"
+	"github.com/celerway/labrador/broker"
 	"log/slog"
 	"os"
 	"os/signal"
