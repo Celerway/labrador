@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/celerway/labrador/broker"
+	"github.com/celerway/labrador/web"
+	"golang.org/x/sync/errgroup"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -25,10 +27,17 @@ func run(ctx context.Context, output *os.File, args []string, env []string) erro
 	logger := slog.New(lh)
 
 	br := broker.New(logger)
+	errGroup := new(errgroup.Group)
+	errGroup.Go(func() error {
+		return br.Run(ctx)
+	})
+	ws := web.New(":8080", logger)
+	errGroup.Go(func() error {
+		return ws.Run(ctx)
+	})
 
-	err := br.Run(ctx)
-	if err != nil {
-		return fmt.Errorf("broker.Run: %w", err)
+	if err := errGroup.Wait(); err == nil {
+		return fmt.Errorf("error group failed: %w", err)
 	}
 	return nil
 }

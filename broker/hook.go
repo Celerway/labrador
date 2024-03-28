@@ -16,6 +16,7 @@ type MonitorHook struct {
 	mqtt.HookBase
 	config  *MonitorHookOptions
 	clients map[string]*mqtt.Client
+	msgs    *circularBuffer
 }
 
 type MonitorHookOptions struct {
@@ -30,10 +31,13 @@ func (h *MonitorHook) Provides(b byte) bool {
 	return bytes.Contains([]byte{
 		mqtt.OnConnect,
 		mqtt.OnDisconnect,
+		mqtt.OnPublished,
 	}, []byte{b})
 }
 
 func (h *MonitorHook) Init(config any) error {
+	h.mu.Lock()
+	defer h.mu.Unlock()
 	h.Log.Info("MonitorHook.Init", "config", config)
 	if _, ok := config.(*MonitorHookOptions); !ok && config != nil {
 		return mqtt.ErrInvalidConfigType
@@ -42,6 +46,8 @@ func (h *MonitorHook) Init(config any) error {
 	if h.config.Server == nil {
 		return mqtt.ErrInvalidConfigType
 	}
+	h.clients = make(map[string]*mqtt.Client)
+	h.msgs = newBuffer(10)
 	return nil
 }
 
@@ -60,7 +66,26 @@ func (h *MonitorHook) OnDisconnect(cl *mqtt.Client, err error, expire bool) {
 	h.mu.Unlock()
 }
 
+func (h *MonitorHook) OnPublished(cl *mqtt.Client, pk packets.Packet) {
+	h.Log.Info("packet published", "client", cl.ID)
+	h.msgs.push(pk)
+}
+
 func (h *MonitorHook) Close() error {
 	h.Log.Info("MonitorHook.Close")
 	return nil
+}
+
+func (h *MonitorHook) Clients() []string {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	clients := make([]string, 0, len(h.clients))
+	for id := range h.clients {
+		clients = append(clients, id)
+	}
+	return clients
+}
+
+func (h *MonitorHook) Messages() []packets.Packet {
+	return h.msgs.get()
 }

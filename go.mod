@@ -5,9 +5,11 @@ go 1.22.1
 require (
 	github.com/mochi-mqtt/server/v2 v2.4.6
 	github.com/oapi-codegen/runtime v1.1.1
+	golang.org/x/sync v0.6.0
 )
 
 require (
+	github.com/a-h/templ v0.2.648 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect

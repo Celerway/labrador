@@ -3,7 +3,7 @@ package broker
 import (
 	"context"
 	"fmt"
-	"github.com/Celerway/labrador/gohue"
+	"github.com/celerway/labrador/gohue"
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/hooks/auth"
 	"github.com/mochi-mqtt/server/v2/listeners"
@@ -17,6 +17,7 @@ type State struct {
 	logger     *slog.Logger
 	server     *mqtt.Server
 	bridgeConn *gohue.Client
+	monitor    *MonitorHook
 }
 
 type PowerDevice struct {
@@ -31,14 +32,19 @@ const (
 )
 
 func New(logger *slog.Logger) *State {
+	monitor := &MonitorHook{
+		clients: make(map[string]*mqtt.Client),
+	}
+
 	server := mqtt.New(&mqtt.Options{
 		Logger:       logger,
 		InlineClient: true, // enable inline client support, allows us to directly publish and subscribe
 	})
 
 	s := &State{
-		logger: logger,
-		server: server,
+		logger:  logger,
+		server:  server,
+		monitor: monitor,
 	}
 	return s
 }
@@ -46,6 +52,10 @@ func New(logger *slog.Logger) *State {
 func (s *State) Run(ctx context.Context) error {
 	// Allow all connections.
 	err := s.server.AddHook(new(auth.AllowHook), nil)
+	if err != nil {
+		return fmt.Errorf("mqtt server.AddHook: %w", err)
+	}
+	err = s.server.AddHook(s.monitor, &MonitorHookOptions{Server: s.server})
 	if err != nil {
 		return fmt.Errorf("mqtt server.AddHook: %w", err)
 	}

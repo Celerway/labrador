@@ -2,7 +2,7 @@ package broker
 
 import (
 	"fmt"
-	"github.com/Celerway/labrador/gohue"
+	"github.com/celerway/labrador/gohue"
 )
 
 func newHueClient(server string) (*gohue.Client, error) {
