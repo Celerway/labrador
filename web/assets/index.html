@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.11/dist/htmx.min.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/sse.js"></script>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
@@ -24,28 +23,16 @@
 <div class="container mx-auto my-5">
     <div class="bg-white rounded shadow p-4">
         <h2 class="font-bold text-xl mb-4">Connected clients</h2>
-        <div hx-get="/latest_updates" hx-trigger="every 1s">
+        <div hx-get="/clients/" hx-trigger="every 1s">
             [content not loaded]
         </div>
     </div>
 
-
-    <div class="bg-white rounded shadow p-4">
-        <h2 class="font-bold text-xl mb-4">Publish Message</h2>
-        <form hx-post="/publish" hx-target="#messages" hx-trigger="submit">
-            <input type="text" name="topic" placeholder="Topic" class="border p-2 rounded mr-2">
-            <input type="text" name="message" placeholder="Message" class="border p-2 rounded mr-2">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Publish
-            </button>
-        </form>
-    </div>
-
     <div class="container mx-auto my-5">
         <div class="bg-white rounded shadow p-4">
-
-            <div hx-ext="sse" sse-connect="/messages" sse-swap="message">
-                Contents of this box will be updated in real time
-                with every SSE message received from the chatroom.
+            <h2 class="font-bold text-xl mb-4">Last messages seen</h2>
+            <div  hx-get="/messages/" hx-trigger="every 1s">
+                [content not loaded]
             </div>
         </div>
     </div>

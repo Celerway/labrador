@@ -10,12 +10,8 @@ var indexHTML []byte
 
 func (ws *WebServer) routes() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/{$}", index)
+	mux.HandleFunc("GET /{$}", index)
+	mux.HandleFunc("GET /clients/{$}", ws.clientList)
+	mux.HandleFunc("GET /messages/{$}", ws.lastMessages)
 	return mux
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(indexHTML)
 }

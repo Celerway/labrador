@@ -14,9 +14,9 @@ The monitor hook extracts information from the broker so the web dashboard can d
 type MonitorHook struct {
 	mu sync.Mutex
 	mqtt.HookBase
-	config  *MonitorHookOptions
-	clients map[string]*mqtt.Client
-	msgs    *circularBuffer
+	config    *MonitorHookOptions
+	clientMap map[string]*mqtt.Client
+	msgs      *circularBuffer
 }
 
 type MonitorHookOptions struct {
@@ -46,7 +46,7 @@ func (h *MonitorHook) Init(config any) error {
 	if h.config.Server == nil {
 		return mqtt.ErrInvalidConfigType
 	}
-	h.clients = make(map[string]*mqtt.Client)
+	h.clientMap = make(map[string]*mqtt.Client)
 	h.msgs = newBuffer(10)
 	return nil
 }
@@ -54,7 +54,7 @@ func (h *MonitorHook) Init(config any) error {
 func (h *MonitorHook) OnConnect(cl *mqtt.Client, pk packets.Packet) error {
 	h.Log.Info("client connected", "client", cl.ID)
 	h.mu.Lock()
-	h.clients[cl.ID] = cl
+	h.clientMap[cl.ID] = cl
 	h.mu.Unlock()
 	return nil
 }
@@ -62,7 +62,7 @@ func (h *MonitorHook) OnConnect(cl *mqtt.Client, pk packets.Packet) error {
 func (h *MonitorHook) OnDisconnect(cl *mqtt.Client, err error, expire bool) {
 	h.Log.Info("client disconnected", "client", cl.ID)
 	h.mu.Lock()
-	delete(h.clients, cl.ID)
+	delete(h.clientMap, cl.ID)
 	h.mu.Unlock()
 }
 
@@ -76,16 +76,16 @@ func (h *MonitorHook) Close() error {
 	return nil
 }
 
-func (h *MonitorHook) Clients() []string {
+func (h *MonitorHook) clients() []string {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	clients := make([]string, 0, len(h.clients))
-	for id := range h.clients {
-		clients = append(clients, id)
+	cs := make([]string, 0, len(h.clientMap))
+	for id := range h.clientMap {
+		cs = append(cs, id)
 	}
-	return clients
+	return cs
 }
 
-func (h *MonitorHook) Messages() []packets.Packet {
+func (h *MonitorHook) messages() []packets.Packet {
 	return h.msgs.get()
 }

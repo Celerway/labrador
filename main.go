@@ -20,6 +20,7 @@ func main() {
 		fmt.Println("run error: ", err)
 		os.Exit(1)
 	}
+	fmt.Println("clean exit")
 }
 
 func run(ctx context.Context, output *os.File, args []string, env []string) error {
@@ -31,13 +32,12 @@ func run(ctx context.Context, output *os.File, args []string, env []string) erro
 	errGroup.Go(func() error {
 		return br.Run(ctx)
 	})
-	ws := web.New(":8080", logger)
+	ws := web.New(":8080", br, logger)
 	errGroup.Go(func() error {
 		return ws.Run(ctx)
 	})
-
-	if err := errGroup.Wait(); err == nil {
-		return fmt.Errorf("error group failed: %w", err)
+	if err := errGroup.Wait(); err != nil {
+		return fmt.Errorf("errgroup reported failure: %w", err)
 	}
 	return nil
 }

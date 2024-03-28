@@ -1,14 +1,17 @@
 package web
 
-templ messageFragment(msg mqttMessage)  {
+import (
+    "github.com/mochi-mqtt/server/v2/packets"
+)
+templ messageFragment(msg packets.Packet)  {
     <div class="p-4 mb-2 bg-gray-50 border rounded">
-        <div class="font-bold text-md">{msg.Topic}</div>
+        <div class="font-bold text-md">{msg.TopicName}</div>
         <div class="text-sm">{string(msg.Payload)}</div>
-        <div class="text-right text-xs text-gray-500">msg.Timestamp.Format(time.RFC3339)</div>
+        <div class="text-right text-xs text-gray-500">{UnixToISO(msg.Created)}</div>
     </div>
 }
 
-templ messageFragments(msgs []mqttMessage) {
+templ messagesFragment(msgs []packets.Packet) {
     <div id="messages" class="bg-white rounded shadow p-4 mt-5">
         for _, msg := range msgs {
             @messageFragment(msg)
@@ -16,3 +19,13 @@ templ messageFragments(msgs []mqttMessage) {
     </div>
 }
 
+templ clientsFragment(clients []string) {
+    <div id="clients" class="bg-white rounded shadow p-4 mt-5">
+        <div class="font-bold text-md">Clients</div>
+        <ul>
+            for _, client := range clients {
+                <li>{client}</li>
+            }
+        </ul>
+    </div>
+}

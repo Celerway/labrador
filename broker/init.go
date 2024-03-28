@@ -33,7 +33,7 @@ const (
 
 func New(logger *slog.Logger) *State {
 	monitor := &MonitorHook{
-		clients: make(map[string]*mqtt.Client),
+		clientMap: make(map[string]*mqtt.Client),
 	}
 
 	server := mqtt.New(&mqtt.Options{
@@ -97,4 +97,12 @@ func (s *State) Run(ctx context.Context) error {
 
 func (s *State) onStorage(cl *mqtt.Client, sub packets.Subscription, pk packets.Packet) {
 	fmt.Println("onStorage")
+}
+
+func (s *State) LastMessages() []packets.Packet {
+	return s.monitor.messages()
+}
+
+func (s *State) CurrentClients() []string {
+	return s.monitor.clients()
 }
