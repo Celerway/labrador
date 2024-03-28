@@ -9,15 +9,14 @@ import (
 	"github.com/mochi-mqtt/server/v2/listeners"
 	"github.com/mochi-mqtt/server/v2/packets"
 	"log/slog"
-	"sync"
 )
 
 type State struct {
-	mu         sync.Mutex
 	logger     *slog.Logger
 	server     *mqtt.Server
 	bridgeConn *gohue.Client
 	monitor    *MonitorHook
+	addr       string
 }
 
 type PowerDevice struct {
@@ -31,7 +30,7 @@ const (
 	storageSub
 )
 
-func New(logger *slog.Logger) *State {
+func New(addr string, logger *slog.Logger) *State {
 	monitor := &MonitorHook{
 		clientMap: make(map[string]*mqtt.Client),
 	}
@@ -45,6 +44,7 @@ func New(logger *slog.Logger) *State {
 		logger:  logger,
 		server:  server,
 		monitor: monitor,
+		addr:    addr,
 	}
 	return s
 }
@@ -60,7 +60,7 @@ func (s *State) Run(ctx context.Context) error {
 		return fmt.Errorf("mqtt server.AddHook: %w", err)
 	}
 	// Create a TCP listener on a standard port.
-	tcp := listeners.NewTCP("tcp", ":1883", nil)
+	tcp := listeners.NewTCP("tcp", s.addr, nil)
 	err = s.server.AddListener(tcp)
 	if err != nil {
 		return fmt.Errorf("mqtt server.AddListener: %w", err)

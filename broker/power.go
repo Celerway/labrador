@@ -19,7 +19,7 @@ func (s *State) onPower(cl *mqtt.Client, sub packets.Subscription, pk packets.Pa
 	}
 	device := m[1]
 	action := m[2]
-
+	s.logger.Debug("onPower", "device", device, "action", action, "topic", pk.TopicName)
 	switch action {
 	case "control":
 		err := s.onPowerControl(device, pk.Payload)

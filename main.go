@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"github.com/celerway/labrador/broker"
 	"github.com/celerway/labrador/web"
+	"github.com/joho/godotenv"
 	"golang.org/x/sync/errgroup"
 	"log/slog"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -24,15 +26,19 @@ func main() {
 }
 
 func run(ctx context.Context, output *os.File, args []string, env []string) error {
-	lh := slog.NewJSONHandler(output, &slog.HandlerOptions{})
+	_ = godotenv.Load()
+	lh := slog.NewJSONHandler(output, &slog.HandlerOptions{
+		Level: getLogLevel(),
+	})
 	logger := slog.New(lh)
-
-	br := broker.New(logger)
+	mqttAddr := getEnvString("MQTT_ADDR", ":1883")
+	br := broker.New(mqttAddr, logger)
 	errGroup := new(errgroup.Group)
 	errGroup.Go(func() error {
 		return br.Run(ctx)
 	})
-	ws := web.New(":8080", br, logger)
+	webAddr := getEnvString("WEB_ADDR", ":8080")
+	ws := web.New(webAddr, br, logger)
 	errGroup.Go(func() error {
 		return ws.Run(ctx)
 	})
@@ -40,4 +46,28 @@ func run(ctx context.Context, output *os.File, args []string, env []string) erro
 		return fmt.Errorf("errgroup reported failure: %w", err)
 	}
 	return nil
+}
+
+func getEnvString(s string, s2 string) string {
+	str, ok := os.LookupEnv(s)
+	if !ok {
+		return s2
+	}
+	return str
+}
+
+// getLogLevel returns the log level from the environment variable LOG_LEVEL.
+func getLogLevel() slog.Level {
+	switch strings.ToUpper(os.Getenv("LOG_LEVEL")) {
+	case "DEBUG":
+		return slog.LevelDebug
+	case "INFO":
+		return slog.LevelInfo
+	case "WARN":
+		return slog.LevelWarn
+	case "ERROR":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
 }
