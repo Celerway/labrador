@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/celerway/labrador/gohue"
+	"github.com/celerway/labrador/msgs"
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/hooks/auth"
 	"github.com/mochi-mqtt/server/v2/listeners"
@@ -12,17 +13,13 @@ import (
 )
 
 type State struct {
-	logger     *slog.Logger
-	server     *mqtt.Server
-	bridgeConn *gohue.Client
-	monitor    *MonitorHook
-	addr       string
-}
-
-type PowerDevice struct {
-	DeviceID string
-	State    bool // true = on, false = off
-	Internal bool
+	logger      *slog.Logger
+	server      *mqtt.Server
+	bridgeConn  *gohue.Client
+	monitor     *MonitorHook
+	addr        string
+	internalPDs map[string]*PowerDevice
+	pdStatus    map[string]msgs.PowerStatus
 }
 
 const (

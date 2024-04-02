@@ -1,10 +1,22 @@
 package broker
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/celerway/labrador/msgs"
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/packets"
 	"regexp"
 )
+
+type PowerDevice struct {
+	State  bool // true = on, false = off
+	Father *State
+}
+
+type PowerStatus struct {
+}
 
 var powerTopicRx = regexp.MustCompile(`lab/power/(\w+)/(control|status)`)
 
@@ -22,28 +34,51 @@ func (s *State) onPower(cl *mqtt.Client, sub packets.Subscription, pk packets.Pa
 	s.logger.Debug("onPower", "device", device, "action", action, "topic", pk.TopicName)
 	switch action {
 	case "control":
-		err := s.onPowerControl(device, pk.Payload)
+		dev, ok := s.internalPDs[device]
+		if !ok {
+			s.logger.Info("ignoring non-builtin device", "device", device, "topic", pk.TopicName)
+			return
+		}
+		err := dev.onPowerControl(device, pk.Payload)
 		if err != nil {
 			s.logger.Warn("onPowerControl", "device", device, "error", err)
 		}
 	case "status":
-		err := s.onPowerStatus(device, pk.Payload)
+		var dev msgs.PowerStatus
+		err := json.Unmarshal(pk.Payload, &dev)
 		if err != nil {
-			s.logger.Warn("onPowerStatus", "device", device, "error", err)
+			s.logger.Warn("json.Unmarshal", "error", err)
+			return
 		}
+		s.logger.Debug("onPowerStatus", "device", device, "status", dev.Power, "error", dev.Error)
+		s.pdStatus[device] = dev
 	default:
 		s.logger.Warn("unknown power action", "action", action, "device", device, "topic", pk.TopicName)
 	}
 }
 
-func (s *State) onPowerControl(device string, payload []byte) error {
-	// payload is the desired state of the device.
-	// This is where you would send the control command to the device.
+func (s *State) NewPowerDevice(deviceID string) error {
+	if _, ok := s.internalPDs[deviceID]; ok {
+		return errors.New("device already exists")
+	}
+	pd := PowerDevice{
+		State:  false,
+		Father: s,
+	}
+	s.internalPDs[deviceID] = &pd
 	return nil
 }
 
-func (s *State) onPowerStatus(device string, payload []byte) error {
-	// payload is the current state of the device.
-	// This is where you would update the state of the device in the broker.
+func (pd *PowerDevice) onPowerControl(device string, payloadBytes []byte) error {
+	huec := pd.Father.bridgeConn
+	if huec == nil {
+		return errors.New("no hue client")
+	}
+	var payload msgs.PowerControl
+	err := json.Unmarshal(payloadBytes, &payload)
+	if err != nil {
+		return fmt.Errorf("json.Unmarshal: %w", err)
+	}
+
 	return nil
 }
