@@ -13,5 +13,6 @@ func (ws *WebServer) routes() http.Handler {
 	mux.HandleFunc("GET /{$}", index)
 	mux.HandleFunc("GET /clients/{$}", ws.clientList)
 	mux.HandleFunc("GET /messages/{$}", ws.lastMessages)
+	mux.HandleFunc("GET /plugs/{$}", ws.plugs)
 	return mux
 }

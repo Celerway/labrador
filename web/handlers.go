@@ -42,3 +42,14 @@ func (ws *WebServer) lastMessages(w http.ResponseWriter, r *http.Request) {
 		ws.logger.Error("lastMessages", "error", err)
 	}
 }
+
+func (ws *WebServer) plugs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	pds := ws.broker.HueBridge.GetPlugs()
+	component := plugsFragment(pds)
+	err := component.Render(r.Context(), w)
+	if err != nil {
+		ws.logger.Error("plugs", "error", err)
+	}
+}

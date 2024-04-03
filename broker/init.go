@@ -13,13 +13,12 @@ import (
 )
 
 type State struct {
-	logger      *slog.Logger
-	server      *mqtt.Server
-	bridgeConn  *gohue.Client
-	monitor     *MonitorHook
-	addr        string
-	internalPDs map[string]*PowerDevice
-	pdStatus    map[string]msgs.PowerStatus
+	logger    *slog.Logger
+	server    *mqtt.Server
+	HueBridge *gohue.HueClient
+	monitor   *MonitorHook
+	addr      string
+	pdStatus  map[string]msgs.PowerStatus // snooping on the power status messages to keep track of this
 }
 
 const (
@@ -31,12 +30,10 @@ func New(addr string, logger *slog.Logger) *State {
 	monitor := &MonitorHook{
 		clientMap: make(map[string]*mqtt.Client),
 	}
-
 	server := mqtt.New(&mqtt.Options{
 		Logger:       logger,
 		InlineClient: true, // enable inline client support, allows us to directly publish and subscribe
 	})
-
 	s := &State{
 		logger:  logger,
 		server:  server,
@@ -78,11 +75,14 @@ func (s *State) Run(ctx context.Context) error {
 		return fmt.Errorf("mqtt server.Subscribe(lab/storage/#): %w", err)
 	}
 	// set up the hue client
-	s.bridgeConn, err = newHueClient("http://1.2.3.4:80/")
+	s.HueBridge, err = newHueClient(s.logger)
 	if err != nil {
 		return fmt.Errorf("newHueClient: %w", err)
 	}
-
+	err = s.HueBridge.Load(context.TODO())
+	if err != nil {
+		return fmt.Errorf("HueBridge.Load: %w", err)
+	}
 	// Run server until context is cancelled or an error occurs.
 	select {
 	case <-ctx.Done():

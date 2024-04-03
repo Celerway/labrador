@@ -38,7 +38,6 @@ func (h *MonitorHook) Provides(b byte) bool {
 func (h *MonitorHook) Init(config any) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	h.Log.Info("MonitorHook.Init", "config", config)
 	if _, ok := config.(*MonitorHookOptions); !ok && config != nil {
 		return mqtt.ErrInvalidConfigType
 	}

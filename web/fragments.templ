@@ -13,6 +13,9 @@ templ messageFragment(msg packets.Packet)  {
 
 templ messagesFragment(msgs []packets.Packet) {
     <div id="messages" class="bg-white rounded shadow p-4 mt-5">
+        if len(msgs) == 0 {
+            <div class="text-center text-gray-500">No messages</div>
+        }
         for _, msg := range msgs {
             @messageFragment(msg)
         }
@@ -25,6 +28,18 @@ templ clientsFragment(clients []string) {
         <ul>
             for _, client := range clients {
                 <li>{client}</li>
+            }
+        </ul>
+    </div>
+}
+
+
+templ plugsFragment(plugs []string) {
+    <div id="plugs" class="bg-white rounded shadow p-4 mt-5">
+        <div class="font-bold text-md">Plugs</div>
+        <ul>
+            for _, plug := range plugs {
+                <li>{plug}</li>
             }
         </ul>
     </div>

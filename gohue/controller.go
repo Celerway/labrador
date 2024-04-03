@@ -136,6 +136,14 @@ func (c *HueClient) Load(ctx context.Context) error {
 	return nil
 }
 
+func (c *HueClient) GetPlugs() []string {
+	var plugs []string
+	for name := range c.plugs {
+		plugs = append(plugs, name)
+	}
+	return plugs
+}
+
 func (c *HueClient) SetPlug(ctx context.Context, name string, state bool) error {
 	plug, ok := c.plugs[name]
 	if !ok {

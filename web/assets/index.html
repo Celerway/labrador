@@ -19,11 +19,20 @@
     </div>
 </nav>
 
+<div class="container mx-auto my-5">
+    <div class="bg-white rounded shadow p-4">
+        <h2 class="font-bold text-xl mb-4">Last messages seen</h2>
+        <div hx-get="/plugs/" hx-trigger="load, every 10s">
+            [content not loaded]
+        </div>
+    </div>
+</div>
+
 
 <div class="container mx-auto my-5">
     <div class="bg-white rounded shadow p-4">
         <h2 class="font-bold text-xl mb-4">Connected clients</h2>
-        <div hx-get="/clients/" hx-trigger="every 1s">
+        <div hx-get="/clients/" hx-trigger="load, every 10s">
             [content not loaded]
         </div>
     </div>
@@ -31,7 +40,7 @@
     <div class="container mx-auto my-5">
         <div class="bg-white rounded shadow p-4">
             <h2 class="font-bold text-xl mb-4">Last messages seen</h2>
-            <div  hx-get="/messages/" hx-trigger="every 1s">
+            <div hx-get="/messages/" hx-trigger="every 2s">
                 [content not loaded]
             </div>
         </div>

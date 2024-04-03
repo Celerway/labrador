@@ -11,3 +11,4 @@
 
 # local setup
 /.env
+/.netrc
