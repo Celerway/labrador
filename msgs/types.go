@@ -15,13 +15,7 @@ type StorageControl struct {
 }
 
 type StorageStatus struct {
-	Active bool     `json:"active"`
+	Active string   `json:"active"`
 	Images []string `json:"images"`
-}
-
-type StorageImage struct {
-	Origin string `json:"origin"`
-	Lun    string `json:"lun"`
-	Size   int    `json:"size"`
-	Error  string `json:"error"` // set if the last Control request failed
+	Error  string   `json:"error"`
 }
