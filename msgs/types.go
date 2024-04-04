@@ -15,7 +15,7 @@ type StorageControl struct {
 }
 
 type StorageStatus struct {
-	Active string   `json:"active"`
+	Status string   `json:"status"`
 	Images []string `json:"images"`
 	Error  string   `json:"error"`
 }
