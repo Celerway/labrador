@@ -114,3 +114,28 @@ func TestConcurrentAccess(t *testing.T) {
 		t.Errorf("Expected buffer count to be %d, got %d", size, cb.count)
 	}
 }
+
+func TestOrdering(t *testing.T) {
+	size := 10
+	cb := newBuffer(size)
+
+	for i := 0; i < size; i++ {
+		msg := packets.Packet{Payload: []byte{byte(i)}}
+		cb.push(msg)
+	}
+
+	messages := cb.get()
+	for i, msg := range messages {
+		if msg.Payload[0] != byte(i) {
+			t.Errorf("Expected payload %d, got %d", byte(i), msg.Payload[0])
+		}
+	}
+
+	messages = cb.getReverse()
+	for i, msg := range messages {
+		if msg.Payload[0] != byte(size-i-1) {
+			t.Errorf("Expected payload %d, got %d", byte(size-i-1), msg.Payload[0])
+		}
+	}
+
+}

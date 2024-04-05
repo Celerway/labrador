@@ -86,5 +86,5 @@ func (h *MonitorHook) clients() []string {
 }
 
 func (h *MonitorHook) messages() []packets.Packet {
-	return h.msgs.get()
+	return h.msgs.getReverse()
 }

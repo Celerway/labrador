@@ -54,3 +54,15 @@ func (cb *circularBuffer) get() []packets.Packet {
 	}
 	return messages
 }
+
+func (cb *circularBuffer) getReverse() []packets.Packet {
+	cb.mu.Lock()
+	defer cb.mu.Unlock()
+
+	messages := make([]packets.Packet, cb.count)
+	for i := 0; i < cb.count; i++ {
+		index := (cb.start + i) % cb.size
+		messages[cb.count-i-1] = cb.buffer[index]
+	}
+	return messages
+}
