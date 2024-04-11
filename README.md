@@ -34,12 +34,45 @@ discover the bridge on the local network through mDNS.
 ## General status topisc
 
 lab/status
-- anyone is free to post here to update the status of the lab
+- anyone is free to post here to update the status of the lab. These would be mostly for human consumption.
 ```json
 {
   "status": "message"
 }
 ```
+
+### Recovery image
+
+The recovery image needs to signal routerunner to synchronize its progress. This is done through the following topics:
+lab/install/$mac/control when the recovery image is ready to accept the firmware.
+```json
+{
+  "status": "ready for firmware"
+}
+```
+This should have "reply topic" set to `lab/install/$mac/firmware`. The response should be:
+```json
+{
+  "firmware": "http://example.com/firmware.bin"
+}
+```
+
+Also, when the firmware is done, the recovery image will signal routerunner that it can disable the USB storage. This 
+is done through the following topic:
+lab/install/$mac/control when the recovery image is ready to reboot.
+```json
+{
+  "status": "ready to reboot"
+}
+```
+This should have "reply topic" set to `lab/install/$mac/response`. The response should be:
+```json
+{
+  "status": "usb storage disabled"
+}
+```
+
+
 
 ### Power devices
 

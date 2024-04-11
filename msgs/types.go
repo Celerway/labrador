@@ -23,3 +23,7 @@ type StorageStatus struct {
 type Status struct {
 	Status string `json:"status"`
 }
+
+type Firmware struct {
+	Firmware string `json:"firmware"`
+}
