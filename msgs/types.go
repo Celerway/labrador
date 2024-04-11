@@ -19,3 +19,7 @@ type StorageStatus struct {
 	Images []string `json:"images"`
 	Error  string   `json:"error"`
 }
+
+type Status struct {
+	Status string `json:"status"`
+}

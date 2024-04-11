@@ -31,6 +31,16 @@ discover the bridge on the local network through mDNS.
 
 ## MQTT Topics
 
+## General status topisc
+
+lab/status
+- anyone is free to post here to update the status of the lab
+```json
+{
+  "status": "message"
+}
+```
+
 ### Power devices
 
 lab/power/$device_name
@@ -40,13 +50,15 @@ lab/power/$device_name
     "power": true
 }
 ```
-- control - messages are published here to control the power state of the device.
+- control - messages are published here to control the power state of the device. 
 ```json
 {
   "power": true,
   "error": "error message"
 }
 ```
+Note that *requests* might be posted to this topic. The request itself will then specify where the
+response should be posted. I recommend `lab/power/$device_name/response` for this.
 
 ### Magic storage gadgets - 
 lab/storage/$device_name
@@ -75,5 +87,7 @@ lab/storage/$device_name
   ]
 }
 ```
+Note that *requests* might be posted to this topic. The request itself will then specify where the
+response should be posted. I recommend `lab/storage/$device_name/response` for this.
 
 
