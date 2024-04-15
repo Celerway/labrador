@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"sort"
 )
 
 type HueClient struct {
@@ -141,6 +142,7 @@ func (c *HueClient) GetPlugs() []string {
 	for name := range c.plugs {
 		plugs = append(plugs, name)
 	}
+	sort.Strings(plugs)
 	return plugs
 }
 

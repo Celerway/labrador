@@ -1,6 +1,8 @@
 package web
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func index(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/packets"
+	"sort"
 	"sync"
 )
 
@@ -82,6 +83,8 @@ func (h *MonitorHook) clients() []string {
 	for id := range h.clientMap {
 		cs = append(cs, id)
 	}
+	// sort the clients by ID
+	sort.Strings(cs)
 	return cs
 }
 
