@@ -7,20 +7,23 @@ import (
 	"github.com/celerway/labrador/broker"
 	"log/slog"
 	"net/http"
+	"path/filepath"
 	"time"
 )
 
 type WebServer struct {
-	logger *slog.Logger
-	server *http.Server
-	broker *broker.State
+	logger         *slog.Logger
+	server         *http.Server
+	broker         *broker.State
+	downloadFolder string
 }
 
 func New(addr, downloadFolder string, br *broker.State, logger *slog.Logger) *WebServer {
 
 	ws := &WebServer{
-		logger: logger,
-		broker: br,
+		logger:         logger,
+		broker:         br,
+		downloadFolder: downloadFolder,
 	}
 
 	routes := ws.routes(downloadFolder)
@@ -90,4 +93,14 @@ func UnixToISO(unixTime int64) string {
 	t := time.Unix(unixTime, 0)
 	// Format the time in ISO 8601 format
 	return t.Format(time.RFC3339)
+}
+
+// downloadList returns a list of files in the download folder
+func (ws *WebServer) downloadList() []string {
+	files, err := filepath.Glob(filepath.Join(ws.downloadFolder, "*"))
+	if err != nil {
+		ws.logger.Error("downloadList", "error", err)
+		return nil
+	}
+	return files
 }

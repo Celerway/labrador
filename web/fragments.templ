@@ -44,3 +44,14 @@ templ plugsFragment(plugs []string) {
         </ul>
     </div>
 }
+
+templ filesFragment(files []string) {
+    <div id="files" class="bg-white rounded shadow p-4 mt-5">
+        <div class="font-bold text-md">Files</div>
+        <ul>
+            for _, file := range files {
+                <li>{file}</li>
+            }
+        </ul>
+    </div>
+}

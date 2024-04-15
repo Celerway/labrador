@@ -53,3 +53,14 @@ func (ws *WebServer) plugs(w http.ResponseWriter, r *http.Request) {
 		ws.logger.Error("plugs", "error", err)
 	}
 }
+
+func (ws *WebServer) fileList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	files := ws.downloadList()
+	component := filesFragment(files)
+	err := component.Render(r.Context(), w)
+	if err != nil {
+		ws.logger.Error("fileList", "error", err)
+	}
+}

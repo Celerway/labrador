@@ -3,7 +3,7 @@ module github.com/celerway/labrador
 go 1.22.1
 
 require (
-	github.com/a-h/templ v0.2.648
+	github.com/a-h/templ v0.2.663
 	github.com/hashicorp/mdns v1.0.5
 	github.com/joho/godotenv v1.5.1
 	github.com/mochi-mqtt/server/v2 v2.4.6

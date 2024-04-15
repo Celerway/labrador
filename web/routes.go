@@ -16,6 +16,7 @@ func (ws *WebServer) routes(downloadFolder string) http.Handler {
 	mux.HandleFunc("GET /clients/{$}", ws.clientList)
 	mux.HandleFunc("GET /messages/{$}", ws.lastMessages)
 	mux.HandleFunc("GET /plugs/{$}", ws.plugs)
+	mux.HandleFunc("GET /files/{$}", ws.fileList)
 	mux.HandleFunc("GET /download/", makeDownloadHandler(downloadFolder))
 	return mux
 }
