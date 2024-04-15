@@ -6,8 +6,11 @@ Labrador is a simple MQTT broker for a router lab environment. It's at the core 
 
 ## Features
 
-It has a dashboard where it'll display the state of the devices in the lab. It gets this state from
+It has a web dashboard where it'll display the state of the devices in the lab. It gets this state from
 snooping on the MQTT messages that the devices publish.
+
+The same HTTP server can also be used to serve HTTP objects, such as firmware images, that the devices might need
+to download.
 
 ## Usage
 

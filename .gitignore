@@ -12,3 +12,6 @@
 # local setup
 /.env
 /.netrc
+
+# The download filder will contain all sort of stuff.
+/download

@@ -16,14 +16,14 @@ type WebServer struct {
 	broker *broker.State
 }
 
-func New(addr string, br *broker.State, logger *slog.Logger) *WebServer {
+func New(addr, downloadFolder string, br *broker.State, logger *slog.Logger) *WebServer {
 
 	ws := &WebServer{
 		logger: logger,
 		broker: br,
 	}
 
-	routes := ws.routes()
+	routes := ws.routes(downloadFolder)
 	mw := LoggingMiddleware(logger)
 	routes = mw(routes)
 
