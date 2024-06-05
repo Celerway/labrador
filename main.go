@@ -143,6 +143,10 @@ func getLocalIPs() ([]net.IP, error) {
 		if iface.Flags&net.FlagLoopback != 0 {
 			continue // loopback interface
 		}
+		// ignore docker interfaces
+		if strings.HasPrefix(iface.Name, "docker") {
+			continue
+		}
 		// ignore tailscale and other tunnel interfaces on macs
 		if strings.HasPrefix(iface.Name, "utun") {
 			continue
