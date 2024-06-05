@@ -27,8 +27,8 @@ Both of these are device IDs. In the labrador MQTT topic hierarchy, these corres
 Labrador comes with built-in power devices. These are based on Philips Hue smart plugs and work through the Hue bridge.
 The package gohue, which is in turn generated out of the openhue api project yaml, is used to control the smart plugs.
 
-Labrador tries to use the `HUE_BRIDGE` environment variable to connect to the bridge. If it's not set, it'll try to 
-discover the bridge on the local network through mDNS.
+Labrador tries to use the `HUE_BRIDGE` environment variable to connect to the bridge. It also requires the 
+`HUE_USERNAME` environment variable to connect.
 
 
 
