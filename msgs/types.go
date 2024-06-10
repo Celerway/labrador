@@ -1,5 +1,7 @@
 package msgs
 
+import "time"
+
 type PowerControl struct {
 	Power bool `json:"power"`
 }
@@ -10,14 +12,18 @@ type PowerStatus struct {
 }
 
 type StorageControl struct {
-	Active bool     `json:"active"`
-	Images []string `json:"images"`
+	Action string   `json:"action"` // activate, deactivate, status
+	Images []string `json:"images"` // list of images to activate
 }
 
 type StorageStatus struct {
-	Status string   `json:"status"`
-	Images []string `json:"images"`
-	Error  string   `json:"error"`
+	Status           string        `json:"status"`
+	Images           []string      `json:"images"`
+	LastStatusChange time.Time     `json:"last_status_change"`
+	Hostname         string        `json:"hostname"`
+	Error            string        `json:"error"`
+	ErrorAt          time.Time     `json:"error_at"`
+	Uptime           time.Duration `json:"uptime"`
 }
 
 type Status struct {
