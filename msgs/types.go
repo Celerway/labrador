@@ -17,13 +17,13 @@ type StorageControl struct {
 }
 
 type StorageStatus struct {
-	Status           string        `json:"status"`
-	Images           []string      `json:"images"`
-	LastStatusChange time.Time     `json:"last_status_change"`
-	Hostname         string        `json:"hostname"`
-	Error            string        `json:"error"`
-	ErrorAt          time.Time     `json:"error_at"`
-	Uptime           time.Duration `json:"uptime"`
+	Status           string    `json:"status"`
+	Images           []string  `json:"images"`
+	LastStatusChange time.Time `json:"last_status_change"`
+	Hostname         string    `json:"hostname"`
+	Error            string    `json:"error"`
+	ErrorAt          time.Time `json:"error_at"`
+	Uptime           string    `json:"uptime"`
 }
 
 type Status struct {
